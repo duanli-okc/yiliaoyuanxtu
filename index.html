@@ -1,0 +1,2494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新门诊医生工作站</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="top-header">
+        <div class="header-left">
+            <div class="logo-small">
+                <i class="fas fa-hospital"></i>
+                <span>新门诊医生工作站</span>
+            </div>
+            <div class="doctor-info">
+                <span class="department">内科</span>
+                <span class="clinic">1号诊室</span>
+                <span class="doctor-name">
+                    <i class="fas fa-user-md"></i>
+                    张医生
+                </span>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="header-btn" title="消息" id="messageBtn">
+                <i class="fas fa-bell"></i>
+                <span class="badge">3</span>
+            </button>
+            <button class="header-btn" title="用户报表">
+                <i class="fas fa-chart-bar"></i>
+            </button>
+            <button class="header-btn" title="帮助 (F1)">
+                <i class="fas fa-question-circle"></i>
+            </button>
+            <button class="header-btn settings-btn" title="设置" onclick="showSettings()">
+                <i class="fas fa-cog"></i>
+            </button>
+            <button class="header-btn" title="重新签到" onclick="showReSignIn()">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="header-btn logout-btn" title="退出" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- 左侧就诊列表 -->
+        <aside class="left-sidebar" id="leftSidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">
+                    <i class="fas fa-users"></i>
+                    就诊列表
+                </div>
+                <div class="sidebar-actions">
+                    <button class="icon-btn" title="钉住列表" onclick="togglePin('leftSidebar')">
+                        <i class="fas fa-thumbtack"></i>
+                    </button>
+                    <button class="icon-btn" title="挂号" onclick="showRegistration()">
+                        <i class="fas fa-plus-circle"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 搜索和筛选 -->
+            <div class="patient-search">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="姓名/拼音/门诊号" id="patientSearch">
+                    <button class="scan-btn" title="扫描模式" onclick="toggleScanMode()">
+                        <i class="fas fa-qrcode"></i>
+                    </button>
+                </div>
+                <div class="filter-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="todayFilter" checked>
+                        <span>今日</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="calledFilter">
+                        <span>已呼</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- 候诊队列 -->
+            <div class="patient-section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span>
+                        <i class="fas fa-clock"></i>
+                        候诊
+                        <span class="count-badge" id="waitingCount">5</span>
+                    </span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="section-content" id="waitingList">
+                    <div class="patient-item" data-id="1001" onclick="selectPatient(this)" ondblclick="startConsultation(this)">
+                        <div class="patient-avatar male">
+                            <i class="fas fa-male"></i>
+                        </div>
+                        <div class="patient-info-brief">
+                            <div class="patient-name">王建国</div>
+                            <div class="patient-meta">男 | 45岁 | 09:30</div>
+                        </div>
+                        <div class="patient-tags">
+                            <span class="tag tag-called" title="已呼叫">
+                                <i class="fas fa-volume-up"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="patient-item" data-id="1002" onclick="selectPatient(this)" ondblclick="startConsultation(this)">
+                        <div class="patient-avatar female">
+                            <i class="fas fa-female"></i>
+                        </div>
+                        <div class="patient-info-brief">
+                            <div class="patient-name">李美玲</div>
+                            <div class="patient-meta">女 | 32岁 | 09:45</div>
+                        </div>
+                        <div class="patient-tags">
+                            <span class="tag tag-return" title="复诊">复</span>
+                        </div>
+                    </div>
+                    <div class="patient-item" data-id="1003" onclick="selectPatient(this)" ondblclick="startConsultation(this)">
+                        <div class="patient-avatar male">
+                            <i class="fas fa-male"></i>
+                        </div>
+                        <div class="patient-info-brief">
+                            <div class="patient-name">张伟</div>
+                            <div class="patient-meta">男 | 28岁 | 10:00</div>
+                        </div>
+                        <div class="patient-tags"></div>
+                    </div>
+                    <div class="patient-item" data-id="1004" onclick="selectPatient(this)" ondblclick="startConsultation(this)">
+                        <div class="patient-avatar female">
+                            <i class="fas fa-female"></i>
+                        </div>
+                        <div class="patient-info-brief">
+                            <div class="patient-name">赵晓燕</div>
+                            <div class="patient-meta">女 | 55岁 | 10:15</div>
+                        </div>
+                        <div class="patient-tags">
+                            <span class="tag tag-focus" title="重点关注">
+                                <i class="fas fa-star"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="patient-item" data-id="1005" onclick="selectPatient(this)" ondblclick="startConsultation(this)">
+                        <div class="patient-avatar male">
+                            <i class="fas fa-male"></i>
+                        </div>
+                        <div class="patient-info-brief">
+                            <div class="patient-name">刘德华</div>
+                            <div class="patient-meta">男 | 62岁 | 10:30</div>
+                        </div>
+                        <div class="patient-tags">
+                            <span class="tag tag-callback" title="待回诊">回</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 正在就诊 -->
+            <div class="patient-section">
+                <div class="section-header active" onclick="toggleSection(this)">
+                    <span>
+                        <i class="fas fa-stethoscope"></i>
+                        正在就诊
+                        <span class="count-badge current">1</span>
+                    </span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="section-content" id="currentList">
+                    <div class="patient-item active" data-id="1000" onclick="selectPatient(this)">
+                        <div class="patient-avatar male">
+                            <i class="fas fa-male"></i>
+                        </div>
+                        <div class="patient-info-brief">
+                            <div class="patient-name">陈明辉</div>
+                            <div class="patient-meta">男 | 38岁 | 09:15</div>
+                        </div>
+                        <div class="patient-tags">
+                            <span class="tag tag-consulting">就诊中</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 已诊病人 -->
+            <div class="patient-section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span>
+                        <i class="fas fa-check-circle"></i>
+                        已诊
+                        <span class="count-badge completed">3</span>
+                    </span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="section-content collapsed" id="completedList">
+                    <div class="patient-item completed" data-id="999" onclick="selectPatient(this)">
+                        <div class="patient-avatar female">
+                            <i class="fas fa-female"></i>
+                        </div>
+                        <div class="patient-info-brief">
+                            <div class="patient-name">周小红</div>
+                            <div class="patient-meta">女 | 41岁 | 08:30</div>
+                        </div>
+                        <div class="patient-tags">
+                            <span class="tag tag-done">已完成</span>
+                        </div>
+                    </div>
+                    <div class="patient-item completed" data-id="998" onclick="selectPatient(this)">
+                        <div class="patient-avatar male">
+                            <i class="fas fa-male"></i>
+                        </div>
+                        <div class="patient-info-brief">
+                            <div class="patient-name">吴强</div>
+                            <div class="patient-meta">男 | 29岁 | 08:45</div>
+                        </div>
+                        <div class="patient-tags">
+                            <span class="tag tag-done">已完成</span>
+                        </div>
+                    </div>
+                    <div class="patient-item completed" data-id="997" onclick="selectPatient(this)">
+                        <div class="patient-avatar female">
+                            <i class="fas fa-female"></i>
+                        </div>
+                        <div class="patient-info-brief">
+                            <div class="patient-name">孙丽</div>
+                            <div class="patient-meta">女 | 35岁 | 09:00</div>
+                        </div>
+                        <div class="patient-tags">
+                            <span class="tag tag-done">已完成</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 底部操作按钮 -->
+            <div class="sidebar-footer">
+                <button class="action-btn primary" onclick="callNextPatient()">
+                    <i class="fas fa-bullhorn"></i>
+                    叫号
+                </button>
+                <button class="action-btn success" onclick="startConsultationForSelected()">
+                    <i class="fas fa-play"></i>
+                    接诊
+                </button>
+                <div class="dropdown">
+                    <button class="action-btn" onclick="toggleDropdown(this)">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="#" onclick="showFollowedPatients()">
+                            <i class="fas fa-star"></i> 已关注
+                        </a>
+                        <a href="#" onclick="resumeConsultation()">
+                            <i class="fas fa-redo"></i> 恢复接诊
+                        </a>
+                        <a href="#" onclick="cancelConsultation()">
+                            <i class="fas fa-times"></i> 取消接诊
+                        </a>
+                        <a href="#" onclick="transferPatient()">
+                            <i class="fas fa-exchange-alt"></i> 转诊
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 中间主内容区 -->
+        <main class="main-content">
+            <!-- 病人信息栏 -->
+            <div class="patient-header-bar">
+                <div class="patient-basic-info">
+                    <div class="patient-photo">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="patient-details">
+                        <div class="patient-name-row">
+                            <span class="name">陈明辉</span>
+                            <span class="gender male">男</span>
+                            <span class="age">38岁</span>
+                            <span class="id-number">
+                                <span class="masked">3301**********1234</span>
+                                <button class="icon-btn small" onclick="toggleIdNumber()" title="显示/隐藏身份证号">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </span>
+                        </div>
+                        <div class="patient-extra-row">
+                            <span><i class="fas fa-id-card"></i> 门诊号: MZ2026020512345</span>
+                            <span><i class="fas fa-credit-card"></i> 就诊卡: 100012345678</span>
+                            <span><i class="fas fa-phone"></i> 13800138000</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="patient-alerts">
+                    <div class="alert-item danger" title="过敏史">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>过敏：青霉素</span>
+                    </div>
+                    <div class="alert-item warning" title="医学警示">
+                        <i class="fas fa-heartbeat"></i>
+                        <span>高血压</span>
+                    </div>
+                </div>
+                <div class="patient-actions">
+                    <select class="patient-destination" title="病人去向">
+                        <option value="">病人去向</option>
+                        <option value="pharmacy">药房取药</option>
+                        <option value="lab">检验科</option>
+                        <option value="exam">检查科</option>
+                        <option value="treatment">治疗室</option>
+                        <option value="infusion">输液室</option>
+                    </select>
+                    <button class="btn btn-sm" onclick="viewMedicalRecord()">
+                        <i class="fas fa-folder-open"></i>
+                        病案查阅
+                    </button>
+                </div>
+            </div>
+
+            <!-- 就诊内容区域 -->
+            <div class="consultation-area">
+                <!-- 门诊病历 -->
+                <section class="medical-record-section">
+                    <div class="section-title">
+                        <i class="fas fa-file-medical"></i>
+                        门诊病历
+                        <div class="section-actions">
+                            <button class="icon-btn" onclick="showTemplateSelector()" title="使用病历模板">
+                                <i class="fas fa-file-alt"></i>
+                            </button>
+                            <button class="icon-btn" onclick="clearMedicalRecord()" title="清除内容">
+                                <i class="fas fa-eraser"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 主诉 -->
+                    <div class="form-row" id="chiefComplaint">
+                        <label class="form-label required">主诉</label>
+                        <div class="form-input-wrapper">
+                            <textarea class="form-textarea" placeholder="请输入主诉，如：头痛、发热3天" rows="2"></textarea>
+                            <button class="insert-btn" onclick="showReportInserter('主诉')" title="插入报告">
+                                <i class="fas fa-plus-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 现病史 -->
+                    <div class="form-row" id="presentIllness">
+                        <label class="form-label">现病史</label>
+                        <div class="form-input-wrapper">
+                            <textarea class="form-textarea" placeholder="请输入现病史" rows="3">患者3天前无明显诱因出现头痛、发热，体温最高38.5℃，伴有咳嗽、流涕，无恶心呕吐，无胸闷气促。</textarea>
+                            <button class="insert-btn" onclick="showReportInserter('现病史')" title="插入报告">
+                                <i class="fas fa-plus-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 既往史 -->
+                    <div class="form-row" id="pastHistory">
+                        <label class="form-label">既往史</label>
+                        <div class="form-input-wrapper">
+                            <textarea class="form-textarea" placeholder="请输入既往史" rows="2">高血压病史5年，长期服用降压药控制良好。否认糖尿病、心脏病史。</textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- 过敏史 -->
+                    <div class="form-row allergy-row" id="allergyHistory">
+                        <label class="form-label">过敏史</label>
+                        <div class="allergy-content">
+                            <div class="allergy-item danger">
+                                <span class="allergy-name">青霉素</span>
+                                <span class="allergy-reaction">皮疹、呼吸困难</span>
+                                <button class="icon-btn small danger" onclick="removeAllergy(this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <button class="add-allergy-btn" onclick="addAllergy()">
+                                <i class="fas fa-plus"></i> 添加过敏史
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 体征 -->
+                    <div class="form-row" id="physicalExam">
+                        <label class="form-label">体征</label>
+                        <div class="vital-signs">
+                            <div class="vital-item">
+                                <label>T (℃)</label>
+                                <input type="text" value="37.8" class="vital-input">
+                            </div>
+                            <div class="vital-item">
+                                <label>P (次/分)</label>
+                                <input type="text" value="88" class="vital-input">
+                            </div>
+                            <div class="vital-item">
+                                <label>R (次/分)</label>
+                                <input type="text" value="20" class="vital-input">
+                            </div>
+                            <div class="vital-item">
+                                <label>BP (mmHg)</label>
+                                <input type="text" value="135/85" class="vital-input">
+                            </div>
+                            <div class="vital-item">
+                                <label>身高 (cm)</label>
+                                <input type="text" value="175" class="vital-input">
+                            </div>
+                            <div class="vital-item">
+                                <label>体重 (kg)</label>
+                                <input type="text" value="72" class="vital-input">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 西医诊断 -->
+                <section class="diagnosis-section" id="diagnosisSection">
+                    <div class="section-title">
+                        <i class="fas fa-diagnoses"></i>
+                        西医诊断
+                        <div class="section-actions">
+                            <button class="icon-btn" onclick="showCommonDiagnosis()" title="常用诊断">
+                                <i class="fas fa-star"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="diagnosis-list" id="diagnosisList">
+                        <div class="diagnosis-item" data-index="1">
+                            <span class="diagnosis-number">1</span>
+                            <div class="diagnosis-content">
+                                <input type="text" class="diagnosis-input" placeholder="输入诊断名称、编码或简码" value="急性上呼吸道感染">
+                                <div class="diagnosis-meta">
+                                    <span class="diagnosis-code">J06.900</span>
+                                    <div class="diagnosis-date">
+                                        <label>发病日期：</label>
+                                        <input type="date" value="2026-02-02">
+                                    </div>
+                                    <button class="icon-btn small" onclick="toggleSuspected(this)" title="设为疑诊">
+                                        <i class="fas fa-question"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button class="icon-btn small danger" onclick="removeDiagnosis(this)" title="删除诊断">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="diagnosis-item" data-index="2">
+                            <span class="diagnosis-number">2</span>
+                            <div class="diagnosis-content">
+                                <input type="text" class="diagnosis-input" placeholder="输入诊断名称、编码或简码" value="高血压病">
+                                <div class="diagnosis-meta">
+                                    <span class="diagnosis-code">I10.x00</span>
+                                    <div class="diagnosis-date">
+                                        <label>发病日期：</label>
+                                        <input type="date" value="2021-01-15">
+                                    </div>
+                                    <button class="icon-btn small" onclick="toggleSuspected(this)" title="设为疑诊">
+                                        <i class="fas fa-question"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button class="icon-btn small danger" onclick="removeDiagnosis(this)" title="删除诊断">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="add-row-btn" onclick="addDiagnosis()">
+                        <i class="fas fa-plus"></i> 新增诊断
+                    </button>
+                </section>
+
+                <!-- 医嘱区域 -->
+                <section class="orders-section">
+                    <!-- 医嘱标签页 -->
+                    <div class="orders-tabs">
+                        <button class="tab-btn active" onclick="switchOrderTab('prescription')">
+                            <i class="fas fa-prescription-bottle-alt"></i>
+                            处方 <span class="tab-count">2</span>
+                        </button>
+                        <button class="tab-btn" onclick="switchOrderTab('labTest')">
+                            <i class="fas fa-vial"></i>
+                            检验 <span class="tab-count">1</span>
+                        </button>
+                        <button class="tab-btn" onclick="switchOrderTab('examination')">
+                            <i class="fas fa-x-ray"></i>
+                            检查 <span class="tab-count">0</span>
+                        </button>
+                        <button class="tab-btn" onclick="switchOrderTab('treatment')">
+                            <i class="fas fa-syringe"></i>
+                            处置 <span class="tab-count">0</span>
+                        </button>
+                        <button class="tab-btn" onclick="switchOrderTab('tcm')">
+                            <i class="fas fa-leaf"></i>
+                            配方 <span class="tab-count">0</span>
+                        </button>
+                        <button class="tab-btn" onclick="switchOrderTab('materials')">
+                            <i class="fas fa-box"></i>
+                            卫材 <span class="tab-count">0</span>
+                        </button>
+                    </div>
+
+                    <!-- 处方内容 -->
+                    <div class="order-content active" id="prescriptionTab">
+                        <div class="order-header">
+                            <div class="order-title">
+                                <span>西药处方</span>
+                                <select class="pharmacy-select">
+                                    <option>门诊西药房</option>
+                                    <option>急诊药房</option>
+                                </select>
+                            </div>
+                            <div class="order-actions">
+                                <button class="icon-btn" onclick="showCommonPrescription()" title="常用处方">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <button class="icon-btn" onclick="showDrugSelector()" title="药品选择器">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <button class="icon-btn" onclick="copyPrescription()" title="复制处方">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button class="icon-btn danger" onclick="deletePrescription()" title="删除整张处方">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="icon-btn warning" onclick="toggleUrgent()" title="紧急医嘱">
+                                    <i class="fas fa-exclamation"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 处方药品列表 -->
+                        <div class="prescription-list" id="prescriptionList">
+                            <div class="prescription-item sent" data-drug="1">
+                                <div class="drug-row">
+                                    <button class="merge-btn" title="一并给药">
+                                        <i class="fas fa-grip-lines"></i>
+                                    </button>
+                                    <div class="drug-name">
+                                        <span class="name">布洛芬缓释胶囊</span>
+                                        <span class="spec">0.3g×24粒/盒</span>
+                                    </div>
+                                    <div class="drug-usage">
+                                        <select class="usage-select">
+                                            <option>口服</option>
+                                            <option>外用</option>
+                                        </select>
+                                    </div>
+                                    <div class="drug-frequency">
+                                        <select class="frequency-select">
+                                            <option>BID</option>
+                                            <option>TID</option>
+                                            <option>QD</option>
+                                            <option>PRN</option>
+                                        </select>
+                                    </div>
+                                    <div class="drug-dosage">
+                                        <input type="text" value="1" class="dosage-input">
+                                        <span>粒</span>
+                                    </div>
+                                    <div class="drug-days">
+                                        <input type="text" value="3" class="days-input">
+                                        <span>天</span>
+                                    </div>
+                                    <div class="drug-quantity">
+                                        <input type="text" value="1" class="quantity-input">
+                                        <span>盒</span>
+                                    </div>
+                                    <div class="drug-price">¥15.60</div>
+                                    <button class="icon-btn small danger" onclick="removeDrug(this)" title="删除">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="prescription-item" data-drug="2">
+                                <div class="drug-row">
+                                    <button class="merge-btn" title="一并给药">
+                                        <i class="fas fa-grip-lines"></i>
+                                    </button>
+                                    <div class="drug-name">
+                                        <span class="name">复方氨酚烷胺胶囊</span>
+                                        <span class="spec">12粒/板</span>
+                                    </div>
+                                    <div class="drug-usage">
+                                        <select class="usage-select">
+                                            <option>口服</option>
+                                        </select>
+                                    </div>
+                                    <div class="drug-frequency">
+                                        <select class="frequency-select">
+                                            <option>TID</option>
+                                            <option>BID</option>
+                                            <option>QD</option>
+                                        </select>
+                                    </div>
+                                    <div class="drug-dosage">
+                                        <input type="text" value="2" class="dosage-input">
+                                        <span>粒</span>
+                                    </div>
+                                    <div class="drug-days">
+                                        <input type="text" value="3" class="days-input">
+                                        <span>天</span>
+                                    </div>
+                                    <div class="drug-quantity">
+                                        <input type="text" value="2" class="quantity-input">
+                                        <span>板</span>
+                                    </div>
+                                    <div class="drug-price">¥8.40</div>
+                                    <button class="icon-btn small danger" onclick="removeDrug(this)" title="删除">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 新增药品输入行 -->
+                            <div class="add-drug-row">
+                                <input type="text" class="drug-search-input" placeholder="输入药品名称、拼音或编码搜索...">
+                                <div class="drug-suggestions" id="drugSuggestions"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="prescription-footer">
+                            <div class="prescription-total">
+                                <span>处方金额：</span>
+                                <span class="total-amount">¥24.00</span>
+                            </div>
+                            <div class="pickup-method">
+                                <label>取药方式：</label>
+                                <select>
+                                    <option>窗口取药</option>
+                                    <option>送药上门</option>
+                                    <option>代煎配送</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 检验内容 -->
+                    <div class="order-content" id="labTestTab">
+                        <div class="order-header">
+                            <div class="order-title">检验医嘱</div>
+                            <div class="order-actions">
+                                <button class="icon-btn" onclick="showCommonLabTest()" title="常用检验">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <button class="icon-btn" onclick="showLabSelector()" title="检验选择器">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="lab-test-list" id="labTestList">
+                            <div class="lab-test-item sent">
+                                <div class="lab-test-row">
+                                    <div class="lab-test-name">
+                                        <i class="fas fa-vial"></i>
+                                        <span>血常规</span>
+                                    </div>
+                                    <div class="lab-test-status">
+                                        <span class="status-tag sent">已发送</span>
+                                    </div>
+                                    <div class="lab-test-result">
+                                        <button class="btn btn-sm" onclick="viewLabResult()">
+                                            <i class="fas fa-file-alt"></i> 查看报告
+                                        </button>
+                                    </div>
+                                    <button class="icon-btn small danger" onclick="removeLabTest(this)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="add-lab-row">
+                            <input type="text" class="lab-search-input" placeholder="输入检验项目名称或编码搜索...">
+                        </div>
+                    </div>
+
+                    <!-- 检查内容 -->
+                    <div class="order-content" id="examinationTab">
+                        <div class="order-header">
+                            <div class="order-title">检查医嘱</div>
+                            <div class="order-actions">
+                                <button class="icon-btn" onclick="showCommonExam()" title="常用检查">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <button class="icon-btn" onclick="showExamSelector()" title="检查选择器">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="exam-list" id="examList">
+                            <div class="empty-state">
+                                <i class="fas fa-x-ray"></i>
+                                <p>暂无检查医嘱</p>
+                                <button class="btn btn-primary" onclick="showExamSelector()">添加检查</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 处置内容 -->
+                    <div class="order-content" id="treatmentTab">
+                        <div class="order-header">
+                            <div class="order-title">处置医嘱</div>
+                            <div class="order-actions">
+                                <button class="icon-btn" onclick="showCommonTreatment()" title="常用处置">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="treatment-list" id="treatmentList">
+                            <div class="empty-state">
+                                <i class="fas fa-syringe"></i>
+                                <p>暂无处置医嘱</p>
+                                <button class="btn btn-primary" onclick="showTreatmentSelector()">添加处置</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 配方内容 -->
+                    <div class="order-content" id="tcmTab">
+                        <div class="order-header">
+                            <div class="order-title">
+                                <span>中药配方</span>
+                                <select class="tcm-type-select">
+                                    <option>中草药</option>
+                                    <option>颗粒剂</option>
+                                    <option>膏方</option>
+                                </select>
+                            </div>
+                            <div class="order-actions">
+                                <button class="icon-btn" onclick="showTcmTemplate()" title="配方引用">
+                                    <i class="fas fa-file-medical"></i>
+                                </button>
+                                <button class="icon-btn" onclick="copyTcmFormula()" title="复制配方">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="tcm-formula" id="tcmFormula">
+                            <div class="empty-state">
+                                <i class="fas fa-leaf"></i>
+                                <p>暂无中药配方</p>
+                                <button class="btn btn-primary" onclick="showTcmSelector()">新增配方</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 卫材内容 -->
+                    <div class="order-content" id="materialsTab">
+                        <div class="order-header">
+                            <div class="order-title">卫材医嘱</div>
+                            <div class="order-actions">
+                                <button class="icon-btn" onclick="showCommonMaterials()" title="常用卫材">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="materials-list" id="materialsList">
+                            <div class="empty-state">
+                                <i class="fas fa-box"></i>
+                                <p>暂无卫材医嘱</p>
+                                <button class="btn btn-primary" onclick="showMaterialsSelector()">添加卫材</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- 底部操作栏 -->
+            <div class="bottom-action-bar">
+                <div class="action-left">
+                    <button class="btn" onclick="showMedicalReference()">
+                        <i class="fas fa-book-medical"></i>
+                        诊疗参考
+                    </button>
+                    <button class="btn" onclick="showCriticalValues()">
+                        <i class="fas fa-exclamation-circle"></i>
+                        危急值
+                    </button>
+                    <button class="btn" onclick="showPackagePlan()">
+                        <i class="fas fa-layer-group"></i>
+                        成套方案 (Ctrl+Q)
+                    </button>
+                    <button class="btn" onclick="copyOrders()">
+                        <i class="fas fa-copy"></i>
+                        复制医嘱 (Ctrl+E)
+                    </button>
+                </div>
+                <div class="action-right">
+                    <button class="btn" onclick="previewRecord()">
+                        <i class="fas fa-eye"></i>
+                        病历预览
+                    </button>
+                    <button class="btn" onclick="printDocuments()">
+                        <i class="fas fa-print"></i>
+                        打印单据 (Ctrl+P)
+                    </button>
+                    <button class="btn btn-warning" onclick="signRecord()">
+                        <i class="fas fa-signature"></i>
+                        病历签名
+                    </button>
+                    <button class="btn btn-primary send-btn" onclick="sendOrders()">
+                        <i class="fas fa-paper-plane"></i>
+                        发送医嘱 (Ctrl+S)
+                    </button>
+                    <button class="btn btn-success complete-btn" onclick="completeConsultation()">
+                        <i class="fas fa-check-circle"></i>
+                        完成接诊
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- 右侧段落大纲 -->
+        <aside class="right-sidebar" id="rightSidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">
+                    <i class="fas fa-list"></i>
+                    段落大纲
+                </div>
+                <button class="icon-btn" title="钉住大纲" onclick="togglePin('rightSidebar')">
+                    <i class="fas fa-thumbtack"></i>
+                </button>
+            </div>
+            
+            <nav class="outline-nav">
+                <a href="#chiefComplaint" class="outline-item active" onclick="scrollToSection('chiefComplaint')">
+                    <i class="fas fa-comment-medical"></i>
+                    主诉
+                </a>
+                <a href="#presentIllness" class="outline-item" onclick="scrollToSection('presentIllness')">
+                    <i class="fas fa-notes-medical"></i>
+                    现病史
+                </a>
+                <a href="#pastHistory" class="outline-item" onclick="scrollToSection('pastHistory')">
+                    <i class="fas fa-history"></i>
+                    既往史
+                </a>
+                <a href="#allergyHistory" class="outline-item" onclick="scrollToSection('allergyHistory')">
+                    <i class="fas fa-allergies"></i>
+                    过敏史
+                </a>
+                <a href="#physicalExam" class="outline-item" onclick="scrollToSection('physicalExam')">
+                    <i class="fas fa-heartbeat"></i>
+                    体征
+                </a>
+                <a href="#diagnosisSection" class="outline-item" onclick="scrollToSection('diagnosisSection')">
+                    <i class="fas fa-diagnoses"></i>
+                    诊断
+                </a>
+                <div class="outline-divider"></div>
+                <a href="#prescriptionTab" class="outline-item" onclick="scrollToOrders('prescription')">
+                    <i class="fas fa-prescription-bottle-alt"></i>
+                    处方
+                    <span class="outline-count">2</span>
+                </a>
+                <a href="#labTestTab" class="outline-item" onclick="scrollToOrders('labTest')">
+                    <i class="fas fa-vial"></i>
+                    检验
+                    <span class="outline-count">1</span>
+                </a>
+                <a href="#examinationTab" class="outline-item" onclick="scrollToOrders('examination')">
+                    <i class="fas fa-x-ray"></i>
+                    检查
+                    <span class="outline-count">0</span>
+                </a>
+                <a href="#treatmentTab" class="outline-item" onclick="scrollToOrders('treatment')">
+                    <i class="fas fa-syringe"></i>
+                    处置
+                    <span class="outline-count">0</span>
+                </a>
+                <a href="#tcmTab" class="outline-item" onclick="scrollToOrders('tcm')">
+                    <i class="fas fa-leaf"></i>
+                    配方
+                    <span class="outline-count">0</span>
+                </a>
+            </nav>
+            
+            <!-- 历次就诊 -->
+            <div class="history-section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span>
+                        <i class="fas fa-clock"></i>
+                        历次就诊
+                    </span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="section-content">
+                    <div class="history-item" onclick="showHistoryDetail('2026-01-15')">
+                        <div class="history-date">2026-01-15</div>
+                        <div class="history-diagnosis">高血压病</div>
+                        <div class="history-doctor">张医生</div>
+                    </div>
+                    <div class="history-item" onclick="showHistoryDetail('2025-12-20')">
+                        <div class="history-date">2025-12-20</div>
+                        <div class="history-diagnosis">感冒</div>
+                        <div class="history-doctor">李医生</div>
+                    </div>
+                    <div class="history-item" onclick="showHistoryDetail('2025-11-08')">
+                        <div class="history-date">2025-11-08</div>
+                        <div class="history-diagnosis">高血压病复诊</div>
+                        <div class="history-doctor">张医生</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- 挂号弹窗 -->
+    <div class="modal" id="registrationModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> 挂号</h3>
+                <button class="close-btn" onclick="closeModal('registrationModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>姓名 <span class="required">*</span></label>
+                        <input type="text" placeholder="请输入患者姓名">
+                    </div>
+                    <div class="form-group">
+                        <label>性别 <span class="required">*</span></label>
+                        <select>
+                            <option value="">请选择</option>
+                            <option value="male">男</option>
+                            <option value="female">女</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>年龄 <span class="required">*</span></label>
+                        <input type="number" placeholder="请输入年龄">
+                    </div>
+                    <div class="form-group">
+                        <label>身份证号</label>
+                        <input type="text" placeholder="请输入身份证号">
+                    </div>
+                    <div class="form-group">
+                        <label>联系电话</label>
+                        <input type="tel" placeholder="请输入联系电话">
+                    </div>
+                    <div class="form-group">
+                        <label>挂号类型</label>
+                        <select>
+                            <option>普通门诊</option>
+                            <option>专家门诊</option>
+                            <option>急诊</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>预约时间</label>
+                        <input type="datetime-local">
+                    </div>
+                    <div class="form-group">
+                        <label>就诊类型</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="visitType" value="initial" checked>
+                                初诊
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="visitType" value="return">
+                                复诊
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('registrationModal')">取消</button>
+                <button class="btn btn-primary" onclick="confirmRegistration()">确认挂号</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 设置弹窗 -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-cog"></i> 参数设置</h3>
+                <button class="close-btn" onclick="closeModal('settingsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h4>药房设置</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>缺省西药房</label>
+                            <select>
+                                <option>门诊西药房</option>
+                                <option>急诊药房</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>缺省中药房</label>
+                            <select>
+                                <option>门诊中药房</option>
+                                <option>煎药室</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>发料药房</label>
+                            <select>
+                                <option>门诊发药窗口1</option>
+                                <option>门诊发药窗口2</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h4>界面设置</h4>
+                    <div class="checkbox-list">
+                        <label class="checkbox-label">
+                            <input type="checkbox">
+                            <span>显示作废医嘱</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox">
+                            <span>开启护眼模式</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked>
+                            <span>检查医嘱兼容查找治疗</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked>
+                            <span>自动保存病历</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('settingsModal')">取消</button>
+                <button class="btn btn-primary" onclick="saveSettings()">保存设置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 转诊弹窗 -->
+    <div class="modal" id="transferModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exchange-alt"></i> 转诊</h3>
+                <button class="close-btn" onclick="closeModal('transferModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>转诊科室</label>
+                    <select>
+                        <option value="">请选择科室</option>
+                        <option>外科</option>
+                        <option>骨科</option>
+                        <option>心内科</option>
+                        <option>神经内科</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>转诊医生</label>
+                    <select>
+                        <option value="">请选择医生</option>
+                        <option>王医生</option>
+                        <option>李医生</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>转诊诊室</label>
+                    <select>
+                        <option value="">请选择诊室</option>
+                        <option>1号诊室</option>
+                        <option>2号诊室</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>转诊原因</label>
+                    <textarea rows="3" placeholder="请输入转诊原因"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('transferModal')">取消</button>
+                <button class="btn btn-primary" onclick="confirmTransfer()">确认转诊</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 病历模板选择器 -->
+    <div class="modal" id="templateModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-alt"></i> 病历模板选择</h3>
+                <button class="close-btn" onclick="closeModal('templateModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="template-search">
+                    <input type="text" placeholder="搜索模板..." class="search-input">
+                </div>
+                <div class="template-categories">
+                    <button class="category-btn active">全部</button>
+                    <button class="category-btn">呼吸系统</button>
+                    <button class="category-btn">消化系统</button>
+                    <button class="category-btn">心血管</button>
+                    <button class="category-btn">神经系统</button>
+                </div>
+                <div class="template-list">
+                    <div class="template-item" onclick="selectTemplate(this)">
+                        <div class="template-name">急性上呼吸道感染模板</div>
+                        <div class="template-preview">主诉：发热、咳嗽X天...</div>
+                    </div>
+                    <div class="template-item" onclick="selectTemplate(this)">
+                        <div class="template-name">高血压病复诊模板</div>
+                        <div class="template-preview">主诉：血压控制欠佳X天...</div>
+                    </div>
+                    <div class="template-item" onclick="selectTemplate(this)">
+                        <div class="template-name">急性胃肠炎模板</div>
+                        <div class="template-preview">主诉：腹痛、腹泻X天...</div>
+                    </div>
+                    <div class="template-item" onclick="selectTemplate(this)">
+                        <div class="template-name">糖尿病复诊模板</div>
+                        <div class="template-preview">主诉：血糖控制欠佳...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('templateModal')">取消</button>
+                <button class="btn btn-primary" onclick="applyTemplate()">应用模板</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成套方案选择器 -->
+    <div class="modal" id="packageModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-layer-group"></i> 成套方案</h3>
+                <button class="close-btn" onclick="closeModal('packageModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="package-toolbar">
+                    <input type="text" placeholder="搜索方案..." class="search-input">
+                    <div class="scope-selector">
+                        <button class="scope-btn active" onclick="setScope('self')">本人 (Ctrl+1)</button>
+                        <button class="scope-btn" onclick="setScope('dept')">本科 (Ctrl+2)</button>
+                        <button class="scope-btn" onclick="setScope('all')">全院 (Ctrl+3)</button>
+                    </div>
+                </div>
+                <div class="package-list">
+                    <div class="package-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox">
+                            <span class="package-name">感冒发热套餐</span>
+                        </label>
+                        <div class="package-content">
+                            <div class="package-detail">布洛芬缓释胶囊、复方氨酚烷胺胶囊、血常规</div>
+                        </div>
+                    </div>
+                    <div class="package-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox">
+                            <span class="package-name">高血压常规检查</span>
+                        </label>
+                        <div class="package-content">
+                            <div class="package-detail">血压监测、心电图、血脂四项、肝肾功能</div>
+                        </div>
+                    </div>
+                    <div class="package-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox">
+                            <span class="package-name">糖尿病随访套餐</span>
+                        </label>
+                        <div class="package-content">
+                            <div class="package-detail">空腹血糖、糖化血红蛋白、尿常规</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="footer-left">
+                    <button class="btn" onclick="selectAllPackages()">全选 (Ctrl+A)</button>
+                    <button class="btn" onclick="clearAllPackages()">全清 (Ctrl+R)</button>
+                </div>
+                <div class="footer-right">
+                    <button class="btn btn-secondary" onclick="closeModal('packageModal')">取消</button>
+                    <button class="btn btn-primary" onclick="applyPackages()">应用方案</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 病案查阅弹窗 -->
+    <div class="modal" id="medicalRecordModal">
+        <div class="modal-content modal-xl">
+            <div class="modal-header">
+                <h3><i class="fas fa-folder-open"></i> 病案查阅 - 陈明辉</h3>
+                <button class="close-btn" onclick="closeModal('medicalRecordModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="record-tabs">
+                    <button class="tab-btn active" onclick="switchRecordTab('orders')">医嘱记录</button>
+                    <button class="tab-btn" onclick="switchRecordTab('documents')">病历文书</button>
+                    <button class="tab-btn" onclick="switchRecordTab('reports')">检验检查</button>
+                    <button class="tab-btn" onclick="switchRecordTab('consent')">知情同意</button>
+                </div>
+                <div class="record-content" id="recordContent">
+                    <div class="record-filter">
+                        <label>就诊时间：</label>
+                        <input type="date" value="2026-01-01"> - <input type="date" value="2026-02-05">
+                        <button class="btn btn-sm">查询</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>就诊日期</th>
+                                <th>科室</th>
+                                <th>医生</th>
+                                <th>诊断</th>
+                                <th>医嘱内容</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2026-01-15</td>
+                                <td>内科</td>
+                                <td>张医生</td>
+                                <td>高血压病</td>
+                                <td>苯磺酸氨氯地平片 5mg QD</td>
+                                <td><span class="status-tag completed">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td>2025-12-20</td>
+                                <td>内科</td>
+                                <td>李医生</td>
+                                <td>急性上呼吸道感染</td>
+                                <td>布洛芬、复方氨酚烷胺</td>
+                                <td><span class="status-tag completed">已完成</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 药品选择器弹窗 -->
+    <div class="modal" id="drugSelectorModal">
+        <div class="modal-content modal-xl">
+            <div class="modal-header">
+                <h3><i class="fas fa-pills"></i> 药品选择器</h3>
+                <button class="close-btn" onclick="closeModal('drugSelectorModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="selector-toolbar">
+                    <input type="text" placeholder="输入药品名称、拼音或编码搜索..." class="search-input" id="drugSelectorSearch" oninput="filterDrugList()">
+                    <div class="category-tabs">
+                        <button class="category-tab active" onclick="filterDrugCategory('all')">全部</button>
+                        <button class="category-tab" onclick="filterDrugCategory('common')">常用</button>
+                        <button class="category-tab" onclick="filterDrugCategory('antibiotic')">抗生素</button>
+                        <button class="category-tab" onclick="filterDrugCategory('analgesic')">解热镇痛</button>
+                        <button class="category-tab" onclick="filterDrugCategory('cardiovascular')">心血管</button>
+                        <button class="category-tab" onclick="filterDrugCategory('digestive')">消化系统</button>
+                    </div>
+                </div>
+                <div class="selector-content">
+                    <div class="drug-grid" id="drugGrid">
+                        <div class="drug-card" onclick="toggleDrugSelection(this)" data-drug='{"name":"布洛芬缓释胶囊","spec":"0.3g×24粒/盒","price":15.60,"category":"analgesic"}'>
+                            <div class="drug-card-header">
+                                <span class="drug-card-name">布洛芬缓释胶囊</span>
+                                <i class="fas fa-star favorite" title="常用"></i>
+                            </div>
+                            <div class="drug-card-spec">0.3g×24粒/盒</div>
+                            <div class="drug-card-footer">
+                                <span class="drug-card-price">¥15.60</span>
+                                <span class="drug-card-stock">库存: 500</span>
+                            </div>
+                        </div>
+                        <div class="drug-card" onclick="toggleDrugSelection(this)" data-drug='{"name":"复方氨酚烷胺胶囊","spec":"12粒/板","price":8.40,"category":"analgesic"}'>
+                            <div class="drug-card-header">
+                                <span class="drug-card-name">复方氨酚烷胺胶囊</span>
+                                <i class="fas fa-star favorite" title="常用"></i>
+                            </div>
+                            <div class="drug-card-spec">12粒/板</div>
+                            <div class="drug-card-footer">
+                                <span class="drug-card-price">¥8.40</span>
+                                <span class="drug-card-stock">库存: 320</span>
+                            </div>
+                        </div>
+                        <div class="drug-card" onclick="toggleDrugSelection(this)" data-drug='{"name":"阿莫西林胶囊","spec":"0.25g×24粒/盒","price":12.80,"category":"antibiotic"}'>
+                            <div class="drug-card-header">
+                                <span class="drug-card-name">阿莫西林胶囊</span>
+                                <i class="fas fa-star" title="收藏"></i>
+                            </div>
+                            <div class="drug-card-spec">0.25g×24粒/盒</div>
+                            <div class="drug-card-footer">
+                                <span class="drug-card-price">¥12.80</span>
+                                <span class="drug-card-stock">库存: 280</span>
+                            </div>
+                        </div>
+                        <div class="drug-card" onclick="toggleDrugSelection(this)" data-drug='{"name":"头孢克肟分散片","spec":"0.1g×6片/板","price":28.00,"category":"antibiotic"}'>
+                            <div class="drug-card-header">
+                                <span class="drug-card-name">头孢克肟分散片</span>
+                                <i class="fas fa-star" title="收藏"></i>
+                            </div>
+                            <div class="drug-card-spec">0.1g×6片/板</div>
+                            <div class="drug-card-footer">
+                                <span class="drug-card-price">¥28.00</span>
+                                <span class="drug-card-stock">库存: 150</span>
+                            </div>
+                        </div>
+                        <div class="drug-card" onclick="toggleDrugSelection(this)" data-drug='{"name":"苯磺酸氨氯地平片","spec":"5mg×14片/盒","price":32.50,"category":"cardiovascular"}'>
+                            <div class="drug-card-header">
+                                <span class="drug-card-name">苯磺酸氨氯地平片</span>
+                                <i class="fas fa-star favorite" title="常用"></i>
+                            </div>
+                            <div class="drug-card-spec">5mg×14片/盒</div>
+                            <div class="drug-card-footer">
+                                <span class="drug-card-price">¥32.50</span>
+                                <span class="drug-card-stock">库存: 200</span>
+                            </div>
+                        </div>
+                        <div class="drug-card" onclick="toggleDrugSelection(this)" data-drug='{"name":"奥美拉唑肠溶胶囊","spec":"20mg×14粒/盒","price":25.80,"category":"digestive"}'>
+                            <div class="drug-card-header">
+                                <span class="drug-card-name">奥美拉唑肠溶胶囊</span>
+                                <i class="fas fa-star" title="收藏"></i>
+                            </div>
+                            <div class="drug-card-spec">20mg×14粒/盒</div>
+                            <div class="drug-card-footer">
+                                <span class="drug-card-price">¥25.80</span>
+                                <span class="drug-card-stock">库存: 180</span>
+                            </div>
+                        </div>
+                        <div class="drug-card" onclick="toggleDrugSelection(this)" data-drug='{"name":"氯雷他定片","spec":"10mg×6片/盒","price":18.50,"category":"common"}'>
+                            <div class="drug-card-header">
+                                <span class="drug-card-name">氯雷他定片</span>
+                                <i class="fas fa-star favorite" title="常用"></i>
+                            </div>
+                            <div class="drug-card-spec">10mg×6片/盒</div>
+                            <div class="drug-card-footer">
+                                <span class="drug-card-price">¥18.50</span>
+                                <span class="drug-card-stock">库存: 420</span>
+                            </div>
+                        </div>
+                        <div class="drug-card" onclick="toggleDrugSelection(this)" data-drug='{"name":"蒙脱石散","spec":"3g×10袋/盒","price":22.00,"category":"digestive"}'>
+                            <div class="drug-card-header">
+                                <span class="drug-card-name">蒙脱石散</span>
+                                <i class="fas fa-star" title="收藏"></i>
+                            </div>
+                            <div class="drug-card-spec">3g×10袋/盒</div>
+                            <div class="drug-card-footer">
+                                <span class="drug-card-price">¥22.00</span>
+                                <span class="drug-card-stock">库存: 350</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="selector-selected">
+                    <div class="selected-header">
+                        <span>已选药品 (<span id="selectedDrugCount">0</span>)</span>
+                        <button class="btn btn-sm" onclick="clearSelectedDrugs()">清空</button>
+                    </div>
+                    <div class="selected-list" id="selectedDrugList"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('drugSelectorModal')">取消</button>
+                <button class="btn btn-primary" onclick="confirmDrugSelection()">确认添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 检验项目选择器弹窗 -->
+    <div class="modal" id="labSelectorModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-vial"></i> 检验项目选择器</h3>
+                <button class="close-btn" onclick="closeModal('labSelectorModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="selector-toolbar">
+                    <input type="text" placeholder="搜索检验项目..." class="search-input" id="labSelectorSearch" oninput="filterLabList()">
+                </div>
+                <div class="lab-categories">
+                    <div class="lab-category">
+                        <div class="category-header" onclick="toggleLabCategory(this)">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>常规检验</span>
+                        </div>
+                        <div class="category-items">
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="血常规" data-price="25">
+                                <span class="item-name">血常规</span>
+                                <span class="item-price">¥25.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="尿常规" data-price="15">
+                                <span class="item-name">尿常规</span>
+                                <span class="item-price">¥15.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="大便常规" data-price="10">
+                                <span class="item-name">大便常规</span>
+                                <span class="item-price">¥10.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="凝血四项" data-price="80">
+                                <span class="item-name">凝血四项</span>
+                                <span class="item-price">¥80.00</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="lab-category">
+                        <div class="category-header" onclick="toggleLabCategory(this)">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>生化检验</span>
+                        </div>
+                        <div class="category-items">
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="肝功能" data-price="60">
+                                <span class="item-name">肝功能</span>
+                                <span class="item-price">¥60.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="肾功能" data-price="45">
+                                <span class="item-name">肾功能</span>
+                                <span class="item-price">¥45.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="血脂四项" data-price="55">
+                                <span class="item-name">血脂四项</span>
+                                <span class="item-price">¥55.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="空腹血糖" data-price="8">
+                                <span class="item-name">空腹血糖</span>
+                                <span class="item-price">¥8.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="糖化血红蛋白" data-price="65">
+                                <span class="item-name">糖化血红蛋白</span>
+                                <span class="item-price">¥65.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="电解质" data-price="35">
+                                <span class="item-name">电解质</span>
+                                <span class="item-price">¥35.00</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="lab-category">
+                        <div class="category-header" onclick="toggleLabCategory(this)">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>免疫检验</span>
+                        </div>
+                        <div class="category-items">
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="乙肝五项" data-price="75">
+                                <span class="item-name">乙肝五项</span>
+                                <span class="item-price">¥75.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="甲状腺功能" data-price="120">
+                                <span class="item-name">甲状腺功能</span>
+                                <span class="item-price">¥120.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="C反应蛋白" data-price="30">
+                                <span class="item-name">C反应蛋白</span>
+                                <span class="item-price">¥30.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="降钙素原" data-price="180">
+                                <span class="item-name">降钙素原</span>
+                                <span class="item-price">¥180.00</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="footer-left">
+                    <span>已选 <strong id="labSelectedCount">0</strong> 项，合计 <strong id="labSelectedTotal">¥0.00</strong></span>
+                </div>
+                <div class="footer-right">
+                    <button class="btn btn-secondary" onclick="closeModal('labSelectorModal')">取消</button>
+                    <button class="btn btn-primary" onclick="confirmLabSelection()">确认添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 检查项目选择器弹窗 -->
+    <div class="modal" id="examSelectorModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-x-ray"></i> 检查项目选择器</h3>
+                <button class="close-btn" onclick="closeModal('examSelectorModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="selector-toolbar">
+                    <input type="text" placeholder="搜索检查项目..." class="search-input" id="examSelectorSearch">
+                </div>
+                <div class="lab-categories">
+                    <div class="lab-category">
+                        <div class="category-header" onclick="toggleLabCategory(this)">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>影像检查</span>
+                        </div>
+                        <div class="category-items">
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="胸部X线" data-price="80">
+                                <span class="item-name">胸部X线</span>
+                                <span class="item-price">¥80.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="胸部CT" data-price="350">
+                                <span class="item-name">胸部CT</span>
+                                <span class="item-price">¥350.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="腹部B超" data-price="120">
+                                <span class="item-name">腹部B超</span>
+                                <span class="item-price">¥120.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="心脏彩超" data-price="280">
+                                <span class="item-name">心脏彩超</span>
+                                <span class="item-price">¥280.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="颈动脉彩超" data-price="180">
+                                <span class="item-name">颈动脉彩超</span>
+                                <span class="item-price">¥180.00</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="lab-category">
+                        <div class="category-header" onclick="toggleLabCategory(this)">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>功能检查</span>
+                        </div>
+                        <div class="category-items">
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="心电图" data-price="30">
+                                <span class="item-name">心电图</span>
+                                <span class="item-price">¥30.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="24小时动态心电图" data-price="200">
+                                <span class="item-name">24小时动态心电图</span>
+                                <span class="item-price">¥200.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="肺功能检查" data-price="150">
+                                <span class="item-name">肺功能检查</span>
+                                <span class="item-price">¥150.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="脑电图" data-price="180">
+                                <span class="item-name">脑电图</span>
+                                <span class="item-price">¥180.00</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="lab-category">
+                        <div class="category-header" onclick="toggleLabCategory(this)">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>内镜检查</span>
+                        </div>
+                        <div class="category-items">
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="胃镜" data-price="380">
+                                <span class="item-name">胃镜</span>
+                                <span class="item-price">¥380.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="肠镜" data-price="450">
+                                <span class="item-name">肠镜</span>
+                                <span class="item-price">¥450.00</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <!-- 检查部位选择 -->
+                <div class="exam-detail-section" id="examDetailSection" style="display:none;">
+                    <h4>检查详情设置</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>检查部位</label>
+                            <select id="examBodyPart">
+                                <option value="">请选择部位</option>
+                                <option value="头部">头部</option>
+                                <option value="胸部">胸部</option>
+                                <option value="腹部">腹部</option>
+                                <option value="四肢">四肢</option>
+                                <option value="全身">全身</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>检查方式</label>
+                            <select id="examMethod">
+                                <option value="普通">普通</option>
+                                <option value="增强">增强</option>
+                                <option value="平扫+增强">平扫+增强</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>数量</label>
+                            <input type="number" value="1" min="1" id="examQuantity">
+                        </div>
+                        <div class="form-group">
+                            <label>嘱托</label>
+                            <input type="text" placeholder="请输入嘱托" id="examNote">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="footer-left">
+                    <span>已选 <strong id="examSelectedCount">0</strong> 项，合计 <strong id="examSelectedTotal">¥0.00</strong></span>
+                </div>
+                <div class="footer-right">
+                    <button class="btn btn-secondary" onclick="closeModal('examSelectorModal')">取消</button>
+                    <button class="btn btn-primary" onclick="confirmExamSelection()">确认添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 处置项目选择器弹窗 -->
+    <div class="modal" id="treatmentSelectorModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-syringe"></i> 处置项目选择器</h3>
+                <button class="close-btn" onclick="closeModal('treatmentSelectorModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="selector-toolbar">
+                    <input type="text" placeholder="搜索处置项目..." class="search-input">
+                </div>
+                <div class="lab-categories">
+                    <div class="lab-category">
+                        <div class="category-header" onclick="toggleLabCategory(this)">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>注射治疗</span>
+                        </div>
+                        <div class="category-items">
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="肌肉注射" data-price="5">
+                                <span class="item-name">肌肉注射</span>
+                                <span class="item-price">¥5.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="静脉注射" data-price="8">
+                                <span class="item-name">静脉注射</span>
+                                <span class="item-price">¥8.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="静脉输液" data-price="15">
+                                <span class="item-name">静脉输液</span>
+                                <span class="item-price">¥15.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="皮试" data-price="3">
+                                <span class="item-name">皮试</span>
+                                <span class="item-price">¥3.00</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="lab-category">
+                        <div class="category-header" onclick="toggleLabCategory(this)">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>换药护理</span>
+                        </div>
+                        <div class="category-items">
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="伤口换药(小)" data-price="20">
+                                <span class="item-name">伤口换药(小)</span>
+                                <span class="item-price">¥20.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="伤口换药(中)" data-price="35">
+                                <span class="item-name">伤口换药(中)</span>
+                                <span class="item-price">¥35.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="伤口换药(大)" data-price="50">
+                                <span class="item-name">伤口换药(大)</span>
+                                <span class="item-price">¥50.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="拆线" data-price="15">
+                                <span class="item-name">拆线</span>
+                                <span class="item-price">¥15.00</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="lab-category">
+                        <div class="category-header" onclick="toggleLabCategory(this)">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>理疗康复</span>
+                        </div>
+                        <div class="category-items">
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="雾化吸入" data-price="25">
+                                <span class="item-name">雾化吸入</span>
+                                <span class="item-price">¥25.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="红外线治疗" data-price="30">
+                                <span class="item-name">红外线治疗</span>
+                                <span class="item-price">¥30.00</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="中频脉冲治疗" data-price="40">
+                                <span class="item-name">中频脉冲治疗</span>
+                                <span class="item-price">¥40.00</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="footer-left">
+                    <span>已选 <strong id="treatmentSelectedCount">0</strong> 项</span>
+                </div>
+                <div class="footer-right">
+                    <button class="btn btn-secondary" onclick="closeModal('treatmentSelectorModal')">取消</button>
+                    <button class="btn btn-primary" onclick="confirmTreatmentSelection()">确认添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 中药配方选择器弹窗 -->
+    <div class="modal" id="tcmSelectorModal">
+        <div class="modal-content modal-xl">
+            <div class="modal-header">
+                <h3><i class="fas fa-leaf"></i> 中药配方</h3>
+                <button class="close-btn" onclick="closeModal('tcmSelectorModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="tcm-toolbar">
+                    <div class="tcm-type-selector">
+                        <label class="radio-label">
+                            <input type="radio" name="tcmType" value="草药" checked>
+                            <span>中草药</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="tcmType" value="颗粒">
+                            <span>颗粒剂</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="tcmType" value="膏方">
+                            <span>膏方</span>
+                        </label>
+                    </div>
+                    <select class="tcm-pharmacy-select">
+                        <option>门诊中药房</option>
+                        <option>煎药室</option>
+                    </select>
+                </div>
+                <div class="tcm-content">
+                    <div class="tcm-search-area">
+                        <input type="text" placeholder="输入中药名称搜索..." class="search-input" id="tcmSearch">
+                        <div class="tcm-quick-list">
+                            <span class="quick-tag" onclick="addTcmHerb('黄芪', 15)">黄芪</span>
+                            <span class="quick-tag" onclick="addTcmHerb('党参', 10)">党参</span>
+                            <span class="quick-tag" onclick="addTcmHerb('白术', 10)">白术</span>
+                            <span class="quick-tag" onclick="addTcmHerb('茯苓', 15)">茯苓</span>
+                            <span class="quick-tag" onclick="addTcmHerb('甘草', 6)">甘草</span>
+                            <span class="quick-tag" onclick="addTcmHerb('当归', 10)">当归</span>
+                            <span class="quick-tag" onclick="addTcmHerb('川芎', 10)">川芎</span>
+                            <span class="quick-tag" onclick="addTcmHerb('熟地', 15)">熟地</span>
+                            <span class="quick-tag" onclick="addTcmHerb('白芍', 10)">白芍</span>
+                            <span class="quick-tag" onclick="addTcmHerb('柴胡', 10)">柴胡</span>
+                        </div>
+                    </div>
+                    <div class="tcm-formula-area">
+                        <div class="formula-header">
+                            <span>配方内容</span>
+                            <div class="formula-actions">
+                                <button class="btn btn-sm" onclick="loadTcmTemplate()">
+                                    <i class="fas fa-file-import"></i> 引用方剂
+                                </button>
+                                <button class="btn btn-sm" onclick="clearTcmFormula()">
+                                    <i class="fas fa-trash"></i> 清空
+                                </button>
+                            </div>
+                        </div>
+                        <div class="formula-list" id="tcmFormulaList">
+                            <div class="formula-item">
+                                <span class="herb-name">黄芪</span>
+                                <input type="number" value="15" min="1" class="herb-dosage"> g
+                                <button class="icon-btn small danger" onclick="removeTcmHerb(this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="formula-item">
+                                <span class="herb-name">党参</span>
+                                <input type="number" value="10" min="1" class="herb-dosage"> g
+                                <button class="icon-btn small danger" onclick="removeTcmHerb(this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="formula-settings">
+                            <div class="form-group">
+                                <label>剂数</label>
+                                <input type="number" value="7" min="1" id="tcmDoses">
+                            </div>
+                            <div class="form-group">
+                                <label>用法</label>
+                                <select id="tcmUsage">
+                                    <option>水煎服</option>
+                                    <option>冲服</option>
+                                    <option>代茶饮</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>服法</label>
+                                <select id="tcmFrequency">
+                                    <option>每日1剂，分2次服用</option>
+                                    <option>每日1剂，分3次服用</option>
+                                    <option>隔日1剂</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="formula-note">
+                            <label>煎药嘱托：</label>
+                            <textarea placeholder="如：先煎、后下、包煎等特殊要求" id="tcmNote"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="footer-left">
+                    <span>共 <strong id="tcmHerbCount">2</strong> 味药，<strong id="tcmDoseCount">7</strong> 剂</span>
+                </div>
+                <div class="footer-right">
+                    <button class="btn btn-secondary" onclick="closeModal('tcmSelectorModal')">取消</button>
+                    <button class="btn btn-primary" onclick="confirmTcmFormula()">确认开方</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 卫材选择器弹窗 -->
+    <div class="modal" id="materialsSelectorModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-box"></i> 卫材选择器</h3>
+                <button class="close-btn" onclick="closeModal('materialsSelectorModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="selector-toolbar">
+                    <input type="text" placeholder="搜索卫材..." class="search-input">
+                </div>
+                <div class="lab-categories">
+                    <div class="lab-category">
+                        <div class="category-header" onclick="toggleLabCategory(this)">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>敷料耗材</span>
+                        </div>
+                        <div class="category-items">
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="无菌纱布" data-price="2">
+                                <span class="item-name">无菌纱布</span>
+                                <span class="item-price">¥2.00/块</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="医用胶带" data-price="5">
+                                <span class="item-name">医用胶带</span>
+                                <span class="item-price">¥5.00/卷</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="创可贴" data-price="1">
+                                <span class="item-name">创可贴</span>
+                                <span class="item-price">¥1.00/片</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="碘伏棉球" data-price="3">
+                                <span class="item-name">碘伏棉球</span>
+                                <span class="item-price">¥3.00/个</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="lab-category">
+                        <div class="category-header" onclick="toggleLabCategory(this)">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>注射耗材</span>
+                        </div>
+                        <div class="category-items">
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="一次性注射器5ml" data-price="1.5">
+                                <span class="item-name">一次性注射器5ml</span>
+                                <span class="item-price">¥1.50/支</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="输液器" data-price="8">
+                                <span class="item-name">输液器</span>
+                                <span class="item-price">¥8.00/套</span>
+                            </label>
+                            <label class="item-checkbox">
+                                <input type="checkbox" value="留置针" data-price="25">
+                                <span class="item-name">留置针</span>
+                                <span class="item-price">¥25.00/个</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('materialsSelectorModal')">取消</button>
+                <button class="btn btn-primary" onclick="confirmMaterialsSelection()">确认添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 常用诊断弹窗 -->
+    <div class="modal" id="commonDiagnosisModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-star"></i> 常用诊断</h3>
+                <button class="close-btn" onclick="closeModal('commonDiagnosisModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="diagnosis-search">
+                    <input type="text" placeholder="搜索诊断名称或ICD编码..." class="search-input" id="diagnosisSearch" oninput="filterDiagnosisList()">
+                </div>
+                <div class="diagnosis-tabs">
+                    <button class="tab-btn active" onclick="switchDiagnosisTab('common')">常用诊断</button>
+                    <button class="tab-btn" onclick="switchDiagnosisTab('history')">历史诊断</button>
+                    <button class="tab-btn" onclick="switchDiagnosisTab('all')">全部诊断</button>
+                </div>
+                <div class="diagnosis-grid" id="diagnosisGrid">
+                    <div class="diagnosis-card" onclick="selectCommonDiagnosis(this)" data-name="急性上呼吸道感染" data-code="J06.900">
+                        <div class="diagnosis-card-name">急性上呼吸道感染</div>
+                        <div class="diagnosis-card-code">J06.900</div>
+                    </div>
+                    <div class="diagnosis-card" onclick="selectCommonDiagnosis(this)" data-name="高血压病" data-code="I10.x00">
+                        <div class="diagnosis-card-name">高血压病</div>
+                        <div class="diagnosis-card-code">I10.x00</div>
+                    </div>
+                    <div class="diagnosis-card" onclick="selectCommonDiagnosis(this)" data-name="2型糖尿病" data-code="E11.900">
+                        <div class="diagnosis-card-name">2型糖尿病</div>
+                        <div class="diagnosis-card-code">E11.900</div>
+                    </div>
+                    <div class="diagnosis-card" onclick="selectCommonDiagnosis(this)" data-name="急性胃肠炎" data-code="K52.900">
+                        <div class="diagnosis-card-name">急性胃肠炎</div>
+                        <div class="diagnosis-card-code">K52.900</div>
+                    </div>
+                    <div class="diagnosis-card" onclick="selectCommonDiagnosis(this)" data-name="支气管炎" data-code="J40.x00">
+                        <div class="diagnosis-card-name">支气管炎</div>
+                        <div class="diagnosis-card-code">J40.x00</div>
+                    </div>
+                    <div class="diagnosis-card" onclick="selectCommonDiagnosis(this)" data-name="冠心病" data-code="I25.100">
+                        <div class="diagnosis-card-name">冠心病</div>
+                        <div class="diagnosis-card-code">I25.100</div>
+                    </div>
+                    <div class="diagnosis-card" onclick="selectCommonDiagnosis(this)" data-name="腰椎间盘突出症" data-code="M51.200">
+                        <div class="diagnosis-card-name">腰椎间盘突出症</div>
+                        <div class="diagnosis-card-code">M51.200</div>
+                    </div>
+                    <div class="diagnosis-card" onclick="selectCommonDiagnosis(this)" data-name="颈椎病" data-code="M47.800">
+                        <div class="diagnosis-card-name">颈椎病</div>
+                        <div class="diagnosis-card-code">M47.800</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('commonDiagnosisModal')">取消</button>
+                <button class="btn btn-primary" onclick="confirmDiagnosisSelection()">确认选择</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 插入报告弹窗 -->
+    <div class="modal" id="reportInserterModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-medical-alt"></i> 插入报告 - <span id="reportTargetSection">主诉</span></h3>
+                <button class="close-btn" onclick="closeModal('reportInserterModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="report-list">
+                    <div class="report-item">
+                        <div class="report-header">
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="report-checkbox">
+                                <span class="report-title">血常规 (2026-02-05)</span>
+                            </label>
+                            <button class="btn btn-sm" onclick="toggleReportDetail(this)">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        <div class="report-detail" style="display:none;">
+                            <table class="report-table">
+                                <tr><td>白细胞计数</td><td>11.5×10^9/L</td><td class="abnormal">↑</td></tr>
+                                <tr><td>红细胞计数</td><td>4.8×10^12/L</td><td></td></tr>
+                                <tr><td>血红蛋白</td><td>145g/L</td><td></td></tr>
+                                <tr><td>血小板计数</td><td>220×10^9/L</td><td></td></tr>
+                                <tr><td>中性粒细胞百分比</td><td>78%</td><td class="abnormal">↑</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="report-item">
+                        <div class="report-header">
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="report-checkbox">
+                                <span class="report-title">肝功能 (2026-01-15)</span>
+                            </label>
+                            <button class="btn btn-sm" onclick="toggleReportDetail(this)">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        <div class="report-detail" style="display:none;">
+                            <table class="report-table">
+                                <tr><td>谷丙转氨酶(ALT)</td><td>25U/L</td><td></td></tr>
+                                <tr><td>谷草转氨酶(AST)</td><td>22U/L</td><td></td></tr>
+                                <tr><td>总胆红素</td><td>12.5μmol/L</td><td></td></tr>
+                                <tr><td>白蛋白</td><td>45g/L</td><td></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('reportInserterModal')">取消</button>
+                <button class="btn btn-primary" onclick="insertSelectedReports()">
+                    <i class="fas fa-check"></i> 插入选中报告
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 过敏史录入弹窗 -->
+    <div class="modal" id="allergyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-allergies"></i> 添加过敏史</h3>
+                <button class="close-btn" onclick="closeModal('allergyModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>过敏物 <span class="required">*</span></label>
+                    <input type="text" id="allergyName" placeholder="如：青霉素、海鲜、花粉等">
+                </div>
+                <div class="form-group">
+                    <label>过敏反应</label>
+                    <input type="text" id="allergyReaction" placeholder="如：皮疹、呼吸困难、休克等">
+                </div>
+                <div class="form-group">
+                    <label>发现时间</label>
+                    <input type="date" id="allergyTime">
+                </div>
+                <div class="form-group">
+                    <label>严重程度</label>
+                    <select id="allergySeverity">
+                        <option value="mild">轻度</option>
+                        <option value="moderate">中度</option>
+                        <option value="severe">重度</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('allergyModal')">取消</button>
+                <button class="btn btn-primary" onclick="confirmAddAllergy()">确认添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 打印单据弹窗 -->
+    <div class="modal" id="printModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-print"></i> 打印单据</h3>
+                <button class="close-btn" onclick="closeModal('printModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="print-options">
+                    <h4>请选择要打印的单据：</h4>
+                    <div class="print-checkbox-list">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="prescription" checked>
+                            <span>处方笺</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="labOrder">
+                            <span>检验申请单</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="examOrder">
+                            <span>检查申请单</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="treatmentOrder">
+                            <span>治疗单</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="medicalRecord" checked>
+                            <span>门诊病历</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="feeList">
+                            <span>费用清单</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="print-settings">
+                    <h4>打印设置：</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>打印份数</label>
+                            <input type="number" value="1" min="1" max="5" id="printCopies">
+                        </div>
+                        <div class="form-group">
+                            <label>纸张大小</label>
+                            <select id="paperSize">
+                                <option value="A4">A4</option>
+                                <option value="A5">A5</option>
+                                <option value="B5">B5</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="previewPrintContent()">
+                    <i class="fas fa-eye"></i> 预览
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal('printModal')">取消</button>
+                <button class="btn btn-primary" onclick="confirmPrint()">
+                    <i class="fas fa-print"></i> 打印
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 病历预览弹窗 -->
+    <div class="modal" id="recordPreviewModal">
+        <div class="modal-content modal-xl">
+            <div class="modal-header">
+                <h3><i class="fas fa-eye"></i> 病历预览</h3>
+                <button class="close-btn" onclick="closeModal('recordPreviewModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="record-preview-content" id="recordPreviewContent">
+                    <div class="preview-header">
+                        <h2>门 诊 病 历</h2>
+                        <div class="hospital-info">XX医院</div>
+                    </div>
+                    <div class="preview-patient-info">
+                        <div class="info-row">
+                            <span>姓名：<strong>陈明辉</strong></span>
+                            <span>性别：<strong>男</strong></span>
+                            <span>年龄：<strong>38岁</strong></span>
+                            <span>门诊号：<strong>MZ2026020512345</strong></span>
+                        </div>
+                        <div class="info-row">
+                            <span>就诊日期：<strong>2026-02-05</strong></span>
+                            <span>科室：<strong>内科</strong></span>
+                            <span>医生：<strong>张医生</strong></span>
+                        </div>
+                    </div>
+                    <div class="preview-section">
+                        <div class="preview-label">主诉：</div>
+                        <div class="preview-text">头痛、发热3天</div>
+                    </div>
+                    <div class="preview-section">
+                        <div class="preview-label">现病史：</div>
+                        <div class="preview-text">患者3天前无明显诱因出现头痛、发热，体温最高38.5℃，伴有咳嗽、流涕，无恶心呕吐，无胸闷气促。</div>
+                    </div>
+                    <div class="preview-section">
+                        <div class="preview-label">既往史：</div>
+                        <div class="preview-text">高血压病史5年，长期服用降压药控制良好。否认糖尿病、心脏病史。</div>
+                    </div>
+                    <div class="preview-section">
+                        <div class="preview-label">过敏史：</div>
+                        <div class="preview-text allergy-text">青霉素过敏（皮疹、呼吸困难）</div>
+                    </div>
+                    <div class="preview-section">
+                        <div class="preview-label">体格检查：</div>
+                        <div class="preview-text">T: 37.8℃  P: 88次/分  R: 20次/分  BP: 135/85mmHg</div>
+                    </div>
+                    <div class="preview-section">
+                        <div class="preview-label">诊断：</div>
+                        <div class="preview-text">
+                            1. 急性上呼吸道感染 (J06.900)<br>
+                            2. 高血压病 (I10.x00)
+                        </div>
+                    </div>
+                    <div class="preview-section">
+                        <div class="preview-label">处理：</div>
+                        <div class="preview-text">
+                            Rp:<br>
+                            1. 布洛芬缓释胶囊 0.3g×24粒 Sig: 1粒 口服 BID × 3天<br>
+                            2. 复方氨酚烷胺胶囊 12粒 Sig: 2粒 口服 TID × 3天
+                        </div>
+                    </div>
+                    <div class="preview-footer">
+                        <div class="signature-area">
+                            <span>医师签名：_______________</span>
+                            <span>日期：2026年02月05日</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('recordPreviewModal')">关闭</button>
+                <button class="btn btn-primary" onclick="printPreviewContent()">
+                    <i class="fas fa-print"></i> 打印病历
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 标记重点关注弹窗 -->
+    <div class="modal" id="markFocusModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-star"></i> 标记重点关注</h3>
+                <button class="close-btn" onclick="closeModal('markFocusModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>关注原因</label>
+                    <select id="focusReason">
+                        <option value="">请选择</option>
+                        <option value="chronic">慢性病管理</option>
+                        <option value="special">特殊病情</option>
+                        <option value="vip">重要病人</option>
+                        <option value="followup">需随访</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>备注信息</label>
+                    <textarea id="focusNote" rows="3" placeholder="请输入关注备注信息"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>提醒时间</label>
+                    <input type="date" id="focusRemindDate">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('markFocusModal')">取消</button>
+                <button class="btn btn-primary" onclick="confirmMarkFocus()">确认标记</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 历次就诊详情弹窗 -->
+    <div class="modal" id="historyDetailModal">
+        <div class="modal-content modal-xl">
+            <div class="modal-header">
+                <h3><i class="fas fa-history"></i> 历次就诊详情 - <span id="historyDetailDate">2026-01-15</span></h3>
+                <button class="close-btn" onclick="closeModal('historyDetailModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="history-detail-content">
+                    <div class="detail-section">
+                        <h4>就诊信息</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item"><label>就诊日期：</label><span>2026-01-15</span></div>
+                            <div class="detail-item"><label>就诊科室：</label><span>内科</span></div>
+                            <div class="detail-item"><label>主治医生：</label><span>张医生</span></div>
+                            <div class="detail-item"><label>就诊类型：</label><span>复诊</span></div>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4>病历信息</h4>
+                        <div class="detail-text">
+                            <p><strong>主诉：</strong>血压控制欠佳1周</p>
+                            <p><strong>现病史：</strong>患者1周前自测血压偏高，约150/95mmHg，无头晕头痛，无胸闷心悸。</p>
+                            <p><strong>诊断：</strong>高血压病 (I10.x00)</p>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4>医嘱信息</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>类型</th><th>项目</th><th>用法</th><th>数量</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>西药</td><td>苯磺酸氨氯地平片</td><td>5mg QD 口服</td><td>1盒</td></tr>
+                                <tr><td>检验</td><td>血压监测</td><td>-</td><td>1次</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="copyHistoryData()">
+                    <i class="fas fa-copy"></i> 复制到本次就诊
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal('historyDetailModal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 检验报告查看弹窗 -->
+    <div class="modal" id="labReportModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-medical-alt"></i> 检验报告 - 血常规</h3>
+                <button class="close-btn" onclick="closeModal('labReportModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="report-info">
+                    <span>检验日期：2026-02-05</span>
+                    <span>报告日期：2026-02-05</span>
+                    <span>检验科室：检验科</span>
+                </div>
+                <table class="data-table report-data-table">
+                    <thead>
+                        <tr>
+                            <th>项目名称</th>
+                            <th>结果</th>
+                            <th>单位</th>
+                            <th>参考范围</th>
+                            <th>提示</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="abnormal-row">
+                            <td>白细胞计数(WBC)</td>
+                            <td class="result-value">11.5</td>
+                            <td>×10^9/L</td>
+                            <td>4.0-10.0</td>
+                            <td class="abnormal-indicator">↑</td>
+                        </tr>
+                        <tr>
+                            <td>红细胞计数(RBC)</td>
+                            <td class="result-value">4.8</td>
+                            <td>×10^12/L</td>
+                            <td>4.0-5.5</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>血红蛋白(HGB)</td>
+                            <td class="result-value">145</td>
+                            <td>g/L</td>
+                            <td>120-160</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>血小板计数(PLT)</td>
+                            <td class="result-value">220</td>
+                            <td>×10^9/L</td>
+                            <td>100-300</td>
+                            <td></td>
+                        </tr>
+                        <tr class="abnormal-row">
+                            <td>中性粒细胞百分比</td>
+                            <td class="result-value">78</td>
+                            <td>%</td>
+                            <td>50-70</td>
+                            <td class="abnormal-indicator">↑</td>
+                        </tr>
+                        <tr>
+                            <td>淋巴细胞百分比</td>
+                            <td class="result-value">18</td>
+                            <td>%</td>
+                            <td>20-40</td>
+                            <td class="abnormal-indicator">↓</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="report-trend">
+                    <h4>历次结果对比</h4>
+                    <div class="trend-chart" id="labTrendChart">
+                        <canvas id="labTrendCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="printLabReport()">
+                    <i class="fas fa-print"></i> 打印报告
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal('labReportModal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 药品说明书弹窗 -->
+    <div class="modal" id="drugInfoModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-book"></i> 药品说明书 - <span id="drugInfoName">布洛芬缓释胶囊</span></h3>
+                <button class="close-btn" onclick="closeModal('drugInfoModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body drug-info-content">
+                <div class="drug-info-section">
+                    <h4>【药品名称】</h4>
+                    <p>通用名称：布洛芬缓释胶囊<br>英文名称：Ibuprofen Sustained Release Capsules</p>
+                </div>
+                <div class="drug-info-section">
+                    <h4>【成份】</h4>
+                    <p>本品主要成份为布洛芬。</p>
+                </div>
+                <div class="drug-info-section">
+                    <h4>【适应症】</h4>
+                    <p>用于缓解轻至中度疼痛如头痛、关节痛、偏头痛、牙痛、肌肉痛、神经痛、痛经。也用于普通感冒或流行性感冒引起的发热。</p>
+                </div>
+                <div class="drug-info-section">
+                    <h4>【规格】</h4>
+                    <p>0.3g</p>
+                </div>
+                <div class="drug-info-section">
+                    <h4>【用法用量】</h4>
+                    <p>口服。成人，一次1粒，一日2次（早晚各一次）。</p>
+                </div>
+                <div class="drug-info-section">
+                    <h4>【不良反应】</h4>
+                    <p>1. 少数病人可出现恶心、呕吐、胃烧灼感或轻度消化不良、胃肠道溃疡及出血、转氨酶升高、头痛、头晕、耳鸣、视力模糊、精神紧张、嗜睡、下肢水肿或体重骤增。<br>
+                    2. 罕见皮疹、过敏性肾炎、膀胱炎、肾病综合征、肾乳头坏死或肾功能衰竭、支气管痉挛。</p>
+                </div>
+                <div class="drug-info-section">
+                    <h4>【禁忌】</h4>
+                    <p>1. 对本品或其他解热、镇痛、抗炎药物过敏者禁用。<br>
+                    2. 孕妇及哺乳期妇女禁用。<br>
+                    3. 对阿司匹林过敏的哮喘患者禁用。</p>
+                </div>
+                <div class="drug-info-section warning">
+                    <h4>【注意事项】</h4>
+                    <p>1. 本品为对症治疗药，不宜长期或大量使用，用于止痛不得超过5天，用于解热不得超过3天，如症状不缓解，请咨询医师或药师。<br>
+                    2. 服用本品期间不得饮酒或含有酒精的饮料。<br>
+                    3. 有下列情况患者慎用：支气管哮喘、肝肾功能不全、凝血机制或血小板功能障碍。</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('drugInfoModal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知提示 -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
